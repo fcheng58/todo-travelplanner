@@ -3,7 +3,7 @@ from rest_framework.response import Response
 
 from .models import Task
 from .serializers import TaskSerializer
-from .services import generate_text, find_activities
+from .services import generate_text, find_activities, find_similar_activities
 
 
 class TaskListCreate(generics.ListCreateAPIView):
@@ -92,6 +92,57 @@ class FindActivitiesView(views.APIView):
             genTask = Task(title = activity.get('title'), description = activity.get('description'),
                             duration = activity.get('duration'), cost = activity.get('cost'),
                             location = location)
+            genTask.save()
+            if qs == Task.objects.none:
+                # note use filter instead of get so a QuerySet is returned
+                qs = Task.objects.filter(pk=genTask.pk)
+            else:
+                # note use filter instead of get so a QuerySet is returned
+                qs = qs.union(Task.objects.filter(pk=genTask.pk))
+            taskList.append(genTask)
+
+        # serialze response
+        serializer = TaskSerializer(qs, many=True) 
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class FindSimilarActivitiesView(views.APIView):
+    queryset = Task.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        taskId = request.data.get('task-id')
+        if not taskId:
+            return Response({"error": "Prompt is task-id"}, status=status.HTTP_400_BAD_REQUEST)
+
+        srcActivity = Task.objects.get(pk=taskId)
+        if not srcActivity:
+            return Response({"error": "No activity for task-id"}, status=status.HTTP_400_BAD_REQUEST)
+
+        limit = request.data.get('limit')
+        if not limit:
+            limit = 3  #default to 3
+
+        otherActivities = Task.objects.filter(location = srcActivity.location)
+        otherActivitiesTitles = [act.title for act in otherActivities]
+
+        aiGeneratedTasks = find_similar_activities(srcActivity.location, srcActivity.title, otherActivitiesTitles, limit)
+        print("found activities = " + str(aiGeneratedTasks))
+
+        if not aiGeneratedTasks:
+            return Response({"error": "Failed to generate sub tasks"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+        if len(aiGeneratedTasks)  == 0:
+            print("no sub tasks generated")
+            return Response({[]}, status=status.HTTP_204_NO_CONTENT)
+        
+        taskList = []
+
+
+        qs = Task.objects.none
+
+        for activity in aiGeneratedTasks:
+            print("activity =" + str(activity))
+            genTask = Task(title = activity.get('title'), description = activity.get('description'),
+                            duration = activity.get('duration'), cost = activity.get('cost'),
+                            location = srcActivity.location)
             genTask.save()
             if qs == Task.objects.none:
                 # note use filter instead of get so a QuerySet is returned
