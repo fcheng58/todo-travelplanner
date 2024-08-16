@@ -40,27 +40,39 @@ export default class CustomModal extends Component {
         <ModalBody>
           <Form>
             <FormGroup>
-              <Label for="todo-title">Title</Label>
+              <Label for="todo-title">Activity</Label>
               <Input
                 type="text"
                 id="todo-title"
                 name="title"
                 value={this.state.activeItem.title}
                 onChange={this.handleChange}
-                placeholder="Enter Todo Title"
+                placeholder="Enter activity name"
               />
             </FormGroup>
             <FormGroup>
               <Label for="todo-description">Description</Label>
               <Input
-                type="text"
+                type="textarea"
                 id="todo-description"
                 name="description"
                 value={this.state.activeItem.description}
                 onChange={this.handleChange}
-                placeholder="Enter Todo description"
+                placeholder="Enter activity description"
               />
             </FormGroup>
+            <FormGroup>
+              <Label for="todo-notes">Notes</Label>
+              <Input
+                type="textarea"
+                id="todo-notes"
+                name="notes"
+                value={this.state.activeItem.notes}
+                onChange={this.handleChange}
+                placeholder="Enter your own notes for this activity"
+              />
+            </FormGroup>
+
             <FormGroup check>
               <Label check>
                 <Input

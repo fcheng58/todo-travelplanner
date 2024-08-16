@@ -63,7 +63,7 @@ export default class ActivityFinder extends Component {
                 name="duration"
                 value={this.state.duration}
                 onChange={e => this.setState({duration : e.target.value})}
-                placeholder="Enter Dnuration of Stay"
+                placeholder="Enter Duration of Stay"
               />
             </FormGroup>
             <FormGroup>
@@ -86,7 +86,7 @@ export default class ActivityFinder extends Component {
                 value={this.state.limit}
                 pattern="\d+"
                 onChange={e => this.setState({limit : e.target.value})}
-                placeholder="Enter Interests"
+                placeholder="Enter number of activites"
               />
             </FormGroup>
           </Form>

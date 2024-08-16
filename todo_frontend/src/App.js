@@ -19,6 +19,7 @@ class App extends Component {
       location: "",
       duration: "",
       interests: "",
+      limit: "5",
       message: "",
       response: "",
     };
@@ -54,19 +55,22 @@ class App extends Component {
   };
 
   
-  handleFindSubmit = (location, duration, interests) => {
+  handleFindSubmit = (location, duration, interests, limit) => {
     //e.preventDefault();
-    this.setState({location: location, duration: duration, interests: interests})
+    this.setState({location: location, duration: duration, interests: interests, limit: limit})
     try {
       axios
         .post('http://127.0.0.1:8000/api/find-activities/', 
-          { location: location, duration: duration, interests: interests })
+          { location: location, duration: duration, interests: interests, limit: limit })
         .then((res) => 
           { this.toggleFinder();
             this.refreshList(); })
-        .catch((error) => {
-          console.error('Error calling /find-activities/:', error);
-        });
+        // if we really wanted to catch the error to handle it
+        // uncomment below
+        //.catch((error) => {
+        //  console.error('Error calling /find-activities/:', error);
+        //})
+        ;
     } catch (error) {
       console.error('Error setting up axios call', error);
     }
@@ -95,8 +99,6 @@ class App extends Component {
   };
 
   findActivities = () => {
-//    const item = { location: this.state.location, duration: this.state.duration, interests: this.state.interests };
-
     this.setState({ finder: !this.state.finder });
   };
 
@@ -144,19 +146,23 @@ class App extends Component {
     );
 
     return newItems.map((item) => (
-      <li
-        key={item.id}
-        className="list-group-item d-flex justify-content-between align-items-center"
-      >
-        <span
-          className={`todo-title mr-2 ${
-            this.state.viewCompleted ? "completed-todo" : ""
-          }`}
-          title={item.description}
-        >
+      <tr>    
+        <td>
           {item.title}
-        </span>
-        <span>
+        </td>
+        <td>
+          {item.description}
+        </td>
+        <td>
+          {item.duration}
+        </td>
+        <td>
+          {item.cost}
+        </td>
+        <td>
+          {item.notes}
+        </td>
+        <td>
           <button
             className="btn btn-secondary mr-2"
             onClick={() => this.editItem(item)}
@@ -169,24 +175,25 @@ class App extends Component {
           >
             Delete
           </button>
-        </span>
-      </li>
+        </td>
+      </tr>
     ));
   };
 
   render() {
     return (
       <main className="container">
-        <h1 className="text-uppercase text-center my-4">Todo app</h1>
+        <h1 className="text-uppercase text-center my-4">Activity Planner</h1>
+        <h4 className="text-center my-4">Planning a trip or just looking for something to do?  Use the Activity Planner to find activities that suit YOUR interests!</h4>
         <div className="row">
-          <div className="col-md-6 col-sm-10 mx-auto p-0">
+          <div className="col-md-12 col-sm-10 mx-auto p-0">
             <div className="card p-3">
               <div className="mb-4">
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-primary mx-1"
                   onClick={this.createItem}
                 >
-                  Add task
+                  Add Activity
                 </button>
                 <button
                   className="btn btn-primary"
@@ -197,9 +204,21 @@ class App extends Component {
 
               </div>
               {this.renderTabList()}
-              <ul className="list-group list-group-flush border-top-0">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">Activity</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Cost</th>
+                    <th scope="col">Notes</th>
+                    <th scope="col"></th>
+                  </tr>
+                </thead>
+                <tbody>              
                 {this.renderItems()}
-              </ul>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -214,7 +233,8 @@ class App extends Component {
           <ActivityFinder
             location={this.state.location}
             duration={this.state.duration}
-            interests={this.state.duration}
+            interests={this.state.interests}
+            limit={this.state.limit}
             toggle={this.toggleFinder}
             onFind={this.handleFindSubmit}
           />
