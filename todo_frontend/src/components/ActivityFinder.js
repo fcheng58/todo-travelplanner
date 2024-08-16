@@ -52,7 +52,7 @@ export default class ActivityFinder extends Component {
                 name="location"
                 value={this.state.location}
                 onChange={e => this.setState({location : e.target.value})}
-                placeholder="Enter Location"
+                placeholder='"London" or "Paris, France"'
               />
             </FormGroup>
             <FormGroup>
@@ -63,7 +63,7 @@ export default class ActivityFinder extends Component {
                 name="duration"
                 value={this.state.duration}
                 onChange={e => this.setState({duration : e.target.value})}
-                placeholder="Enter Duration of Stay"
+                placeholder='"2 days" or "3 hours"'
               />
             </FormGroup>
             <FormGroup>
@@ -74,7 +74,7 @@ export default class ActivityFinder extends Component {
                 name="interests"
                 value={this.state.interests}
                 onChange={e => this.setState({interests : e.target.value})}
-                placeholder="Enter Interests"
+                placeholder='"I enjoy a mix of culture, history, good food and outdoor activities" or "Celebrate a 10 year anniversary."'
               />
             </FormGroup>
             <FormGroup>

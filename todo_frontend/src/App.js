@@ -76,18 +76,6 @@ class App extends Component {
     }
   };
 
-  handleChatSubmit = (e) => {
-    e.preventDefault();
-
-    try {
-      axios
-        .post('http://127.0.0.1:8000/api/generate-text/', { prompt: this.state.message })
-        .then((res) => this.setState({ response: res.data["data"] }));
-    } catch (error) {
-      console.error('Error chatting with GPT:', error);
-    }
-  };  
-
   handleDelete = (item) => {
     axios
       .delete(`/api/tasks/${item.id}/`)
@@ -110,6 +98,18 @@ class App extends Component {
 
   editItem = (item) => {
     this.setState({ activeItem: item, modal: !this.state.modal });
+  };
+
+  findSimilar = (item, limit) => {
+    try {
+      axios
+        .post('http://127.0.0.1:8000/api/find-similar-activities/', 
+          { "task-id": item.id, "limit": limit })
+        .then((res) => 
+          {  this.refreshList(); });
+    } catch (error) {
+      console.error('Error finding similar activities', error);
+    }
   };
 
   displayCompleted = (status) => {
@@ -168,6 +168,12 @@ class App extends Component {
             onClick={() => this.editItem(item)}
           >
             Edit
+          </button>
+          <button
+            className="btn btn-secondary mr-2"
+            onClick={() => this.findSimilar(item, this.state.limit)}
+          >
+            Find Similar
           </button>
           <button
             className="btn btn-danger"
@@ -239,25 +245,7 @@ class App extends Component {
             onFind={this.handleFindSubmit}
           />
         ) : null}
-        <div className="row text-center">
-          <h2>Summarize tasks with GPT</h2>
-          <form onSubmit={this.handleChatSubmit}>
-            <textarea
-              value={this.state.message}
-              onChange={(e) => this.setState({ message: e.target.value })}
-              rows="4"
-              cols="50"
-            />
-            <br/>
-            <button className="btn btn-primary" type="submit">Send</button>
-          </form>
-          {this.state.response && (
-            <div>
-              <h2>Response:</h2>
-              <p>{this.state.response}</p>
-            </div>
-          )}
-        </div>        
+               
       </main>
     );
   }
