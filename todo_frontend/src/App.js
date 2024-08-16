@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Modal from "./components/Modal";
+import ActivityFinder from "./components/ActivityFinder";
 import axios from "axios";
 
 class App extends Component {
@@ -9,11 +10,15 @@ class App extends Component {
       viewCompleted: false,
       todoList: [],
       modal: false,
+      finder: false,
       activeItem: {
         title: "",
         description: "",
         completed: false,
       },
+      location: "",
+      duration: "",
+      interests: "",
       message: "",
       response: "",
     };
@@ -48,6 +53,25 @@ class App extends Component {
       .then((res) => this.refreshList());
   };
 
+  
+  handleFindSubmit = (location, duration, interests) => {
+    //e.preventDefault();
+    this.setState({location: location, duration: duration, interests: interests})
+    try {
+      axios
+        .post('http://127.0.0.1:8000/api/find-activities/', 
+          { location: location, duration: duration, interests: interests })
+        .then((res) => 
+          { this.toggleFinder();
+            this.refreshList(); })
+        .catch((error) => {
+          console.error('Error calling /find-activities/:', error);
+        });
+    } catch (error) {
+      console.error('Error setting up axios call', error);
+    }
+  };
+
   handleChatSubmit = (e) => {
     e.preventDefault();
 
@@ -64,6 +88,16 @@ class App extends Component {
     axios
       .delete(`/api/tasks/${item.id}/`)
       .then((res) => this.refreshList());
+  };
+
+  toggleFinder = () => {
+    this.setState({ finder: !this.state.finder });
+  };
+
+  findActivities = () => {
+//    const item = { location: this.state.location, duration: this.state.duration, interests: this.state.interests };
+
+    this.setState({ finder: !this.state.finder });
   };
 
   createItem = () => {
@@ -154,6 +188,13 @@ class App extends Component {
                 >
                   Add task
                 </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={this.findActivities}
+                >
+                  Find Activities
+                </button>
+
               </div>
               {this.renderTabList()}
               <ul className="list-group list-group-flush border-top-0">
@@ -167,6 +208,15 @@ class App extends Component {
             activeItem={this.state.activeItem}
             toggle={this.toggle}
             onSave={this.handleSubmit}
+          />
+        ) : null}
+        {this.state.finder ? (
+          <ActivityFinder
+            location={this.state.location}
+            duration={this.state.duration}
+            interests={this.state.duration}
+            toggle={this.toggleFinder}
+            onFind={this.handleFindSubmit}
           />
         ) : null}
         <div className="row text-center">
