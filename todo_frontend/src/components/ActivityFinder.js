@@ -56,7 +56,7 @@ export default class ActivityFinder extends Component {
               />
             </FormGroup>
             <FormGroup>
-              <Label for="interests">Describe any special activities or circumstances to refine your search</Label>
+              <Label for="interests">Describe any special activities or circumstances to refine your search (optional)</Label>
               <Input
                 type="textarea"
                 id="interests"
