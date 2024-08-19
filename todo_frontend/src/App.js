@@ -22,6 +22,7 @@ class App extends Component {
       limit: "5",
       message: "",
       response: "",
+      gettingData: false,
     };
   }
 
@@ -57,13 +58,14 @@ class App extends Component {
   
   handleFindSubmit = (location, duration, interests, limit) => {
     //e.preventDefault();
-    this.setState({location: location, duration: duration, interests: interests, limit: limit})
+    this.setState({location: location, duration: duration, interests: interests, limit: limit, gettingData: true})
     try {
       axios
         .post('http://127.0.0.1:8000/api/find-activities/', 
           { location: location, duration: duration, interests: interests, limit: limit })
         .then((res) => 
-          { this.toggleFinder();
+          { this.setState({gettingData: false})
+            this.toggleFinder();
             this.refreshList(); })
         // if we really wanted to catch the error to handle it
         // uncomment below
@@ -72,6 +74,7 @@ class App extends Component {
         //})
         ;
     } catch (error) {
+      this.setState({gettingData:false})
       console.error('Error setting up axios call', error);
     }
   };
@@ -102,12 +105,18 @@ class App extends Component {
 
   findSimilar = (item, limit) => {
     try {
+      this.setState({gettingData : true});
+
       axios
         .post('http://127.0.0.1:8000/api/find-similar-activities/', 
           { "task-id": item.id, "limit": limit })
         .then((res) => 
-          {  this.refreshList(); });
+          {
+            this.setState({gettingData: false});
+            this.refreshList();
+           });
     } catch (error) {
+      this.setState({gettingData: false});
       console.error('Error finding similar activities', error);
     }
   };
@@ -171,6 +180,7 @@ class App extends Component {
           </button>
           <button
             className="btn btn-secondary mr-2"
+            style={{ cursor: this.state.gettingData ? 'wait' : 'default' }}
             onClick={() => this.findSimilar(item, this.state.limit)}
           >
             Find Similar
@@ -188,13 +198,13 @@ class App extends Component {
 
   render() {
     return (
-      <main className="container">
+      <main className="container" id="main" style={{ cursor: this.state.gettingData ? 'wait' : 'default' }}>
         <h1 className="text-uppercase text-center my-4">Activity Planner</h1>
         <h4 className="text-center my-4">Planning a trip or just looking for something to do?  Use the Activity Planner to find activities that suit YOUR interests!</h4>
         <div className="row">
           <div className="col-md-12 col-sm-10 mx-auto p-0">
             <div className="card p-3">
-              <div className="mb-4">
+              <div className="mb-4" >
                 <button
                   className="btn btn-primary mx-1"
                   onClick={this.createItem}
@@ -243,6 +253,7 @@ class App extends Component {
             limit={this.state.limit}
             toggle={this.toggleFinder}
             onFind={this.handleFindSubmit}
+            gettingData={this.state.gettingData}
           />
         ) : null}
                

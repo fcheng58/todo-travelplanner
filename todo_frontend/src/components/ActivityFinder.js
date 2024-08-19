@@ -24,17 +24,6 @@ export default class ActivityFinder extends Component {
     };
   }
 
-  handleChange = (e) => {
-    let { name, value } = e.target;
-
-    if (e.target.type === "checkbox") {
-      value = e.target.checked;
-    }
-
-    const activeItem = { ...this.state.activeItem, [name]: value };
-
-    this.setState({ activeItem });
-  };
 
   render() {
     const { toggle, onFind } = this.props;
@@ -42,8 +31,8 @@ export default class ActivityFinder extends Component {
     return (
       <Modal isOpen={true} toggle={toggle}>
         <ModalHeader toggle={toggle}>Find Activities</ModalHeader>
-        <ModalBody>
-          <Form>
+        <ModalBody  style={{ cursor: this.props.gettingData ? 'wait' : 'default' }}>
+          <Form> 
             <FormGroup>
               <Label for="location-title">Location of activities</Label>
               <Input
@@ -52,7 +41,7 @@ export default class ActivityFinder extends Component {
                 name="location"
                 value={this.state.location}
                 onChange={e => this.setState({location : e.target.value})}
-                placeholder='"London" or "Paris, France"'
+                placeholder='example: "London" or "Paris, France"'
               />
             </FormGroup>
             <FormGroup>
@@ -63,7 +52,7 @@ export default class ActivityFinder extends Component {
                 name="duration"
                 value={this.state.duration}
                 onChange={e => this.setState({duration : e.target.value})}
-                placeholder='"2 days" or "3 hours"'
+                placeholder='example: "2 days" or "3 hours"'
               />
             </FormGroup>
             <FormGroup>
@@ -74,7 +63,7 @@ export default class ActivityFinder extends Component {
                 name="interests"
                 value={this.state.interests}
                 onChange={e => this.setState({interests : e.target.value})}
-                placeholder='"I enjoy a mix of culture, history, good food and outdoor activities" or "Celebrate a 10 year anniversary."'
+                placeholder='example: "I enjoy a mix of culture, history, good food and outdoor activities" or "Celebrate a 10 year anniversary."'
               />
             </FormGroup>
             <FormGroup>
@@ -93,6 +82,7 @@ export default class ActivityFinder extends Component {
         </ModalBody>
         <ModalFooter>
           <Button
+            style={{ cursor: this.props.gettingData ? 'wait' : 'default' }}
             color="success"
             onClick={() => onFind(this.state.location, this.state.duration, this.state.interests, this.state.limit)}
           >
