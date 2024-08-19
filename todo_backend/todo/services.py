@@ -38,12 +38,12 @@ def find_activities(location, duration, interests, limit):
 def find_similar_activities(location, activity_name, exclude_list, limit):
 
     exclude_string = ','.join(exclude_list)
-    promptInput = "location: " + location + ". activity: " + activity_name + ". exclude: " + exclude_string +". limit: " + str(limit) + ". "
+    promptInput = "location: " + location + ". activity: " + activity_name + ". exclude_list: " + exclude_string +". limit: " + str(limit) + ". "
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": "You will be provided with a location and a activity and an exclude list and a limit.  Generate a list of activities to do in the given location that are similar to the given activty. Exclude the activities in the passed in exclude_list from the list returned. Return the list of activities in json format, with each item in the list having attributes title, description, duration, cost.  Limit the number of activities generated to the given limit."},
+            {"role": "system", "content": "You will be provided with a location and an activity and an exclude_list and a limit.  Generate a list of activities to do in the given location that are similar to (but not the same as) the given activty. Exclude the activities in the passed in exclude_list from the list returned. Return the list of activities in json format, with each item in the list having attributes title, description, duration, cost.  Limit the number of activities generated to the given limit."},
             {"role": "user", "content": promptInput }
         ]
     )   

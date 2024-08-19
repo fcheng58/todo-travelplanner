@@ -55,8 +55,6 @@ class FindActivitiesView(views.APIView):
     queryset = Task.objects.all()
 
     def post(self, request, *args, **kwargs):
-        # ignore for now
-        taskId = request.data.get('task-id')
 
         location = request.data.get('location')
         if not location:
@@ -70,9 +68,8 @@ class FindActivitiesView(views.APIView):
 
         limit = request.data.get('limit')
         if not limit:
-            limit = 3  #default to 3
+            limit = 5  #default to 5
 
- 
         aiGeneratedTasks = find_activities(location, duration, interests, limit)
         print("found activities = " + str(aiGeneratedTasks))
 
@@ -82,9 +79,6 @@ class FindActivitiesView(views.APIView):
             print("no sub tasks generated")
             return Response({[]}, status=status.HTTP_204_NO_CONTENT)
         
-        taskList = []
-
-
         qs = Task.objects.none
 
         for activity in aiGeneratedTasks:
@@ -99,7 +93,6 @@ class FindActivitiesView(views.APIView):
             else:
                 # note use filter instead of get so a QuerySet is returned
                 qs = qs.union(Task.objects.filter(pk=genTask.pk))
-            taskList.append(genTask)
 
         # serialze response
         serializer = TaskSerializer(qs, many=True) 
@@ -133,9 +126,6 @@ class FindSimilarActivitiesView(views.APIView):
             print("no sub tasks generated")
             return Response({[]}, status=status.HTTP_204_NO_CONTENT)
         
-        taskList = []
-
-
         qs = Task.objects.none
 
         for activity in aiGeneratedTasks:
@@ -150,7 +140,6 @@ class FindSimilarActivitiesView(views.APIView):
             else:
                 # note use filter instead of get so a QuerySet is returned
                 qs = qs.union(Task.objects.filter(pk=genTask.pk))
-            taskList.append(genTask)
 
         # serialze response
         serializer = TaskSerializer(qs, many=True) 
