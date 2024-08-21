@@ -1,11 +1,11 @@
-# django-todo-react
+# todo-travelplanner
 
 ### Clone the project
 
 ```bash
 cd ~
 mkdir workspace 
-git clone git@github.com:ryu2/django-todo-react.git
+git clone git@github.com:fcheng58/todo-travelplanner.git
 ```
 
 ### Python backend setup
@@ -15,7 +15,7 @@ Download and install python 3.9 from https://www.python.org/
 install pipenv
 pip install pipenv
 
-cd ~/workspace/django-todo-react/todo_backend
+cd ~/workspace/todo-travelplanner/todo_backend
 pipenv install
 pipenv shell
 export OPENAI_API_KEY="hello world" #consider saving this to your env 
@@ -33,7 +33,7 @@ Install node https://nodejs.org/en/download/package-manager
 
 Install npm https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
 ```bash
-cd ~/workspace/django-todo-react/todo_frontend/
+cd ~/workspace/todo-travelplanner/todo_frontend/
 npm install 
 npm start
 ```
@@ -41,9 +41,9 @@ npm start
 ### Accessing the website locally 
 
 ```
-cd ~/workspace/django-todo-react/todo_backend
+cd ~/workspace/todo-travelplanner/todo_backend
 python manage.py runserver
-cd ~/workspace/django-todo-react/todo_frontend/
+cd ~/workspace/todo-travelplanner/todo_frontend/
 npm start
 ```
 ```
