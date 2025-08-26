@@ -4,6 +4,9 @@ import os
 import sys
 
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'todo_project.settings')
