@@ -1,9 +1,26 @@
 import openai
 from django.conf import settings
+from pydantic import BaseModel
+
 import json
 
 openai.api_key = settings.OPENAI_API_KEY
 client = openai.OpenAI()
+
+class Activity(BaseModel):
+    title: str
+    description: str
+    duration: str
+    cost: str  
+
+class Activities(BaseModel):
+    activities: list[Activity]
+
+
+activities_schema = {
+    "name": "Activities",
+    "schema": Activities.model_json_schema()   
+}
 
 def generate_text(prompt):
 
@@ -34,6 +51,35 @@ def find_activities(location, duration, interests, limit):
     print(tasks)
 
     return convert_openai_response_to_json(tasks)
+
+def find_activities_struct(location, duration, interests, limit):
+
+    promptInput = "location: " + location + ". duration: " + duration +". limit: " + str(limit) + ". "
+    if interests and len(interests) > 0:
+        promptInput = promptInput + " interests: " + interests + "."
+
+    print(Activities.model_json_schema())
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You will be provided with a location and a duration and an optional interests and a limit.  Generate a list of activities to do in the given location assuming that the person will stay in the location for the given duration.  If interests is provided, use it to guide the activies returned. Return the list of activities in json format, with each item in the list having attributes title, description, duration, cost.  Limit the number of activities generated to the given limit."},
+            {"role": "user", "content": promptInput }
+        ],
+        response_format={"type": "json_schema", "json_schema": activities_schema}
+
+    )   
+    tasks =  response.choices[0].message.content.strip()
+    print(tasks)
+
+    parsed = json.loads(response.choices[0].message.content)
+    print(parsed)
+#    Suggestions.model_validate_json(parsed)
+
+
+    return parsed.get('activities')
+#    return convert_openai_response_to_json(tasks)
+
 
 def find_similar_activities(location, activity_name, exclude_list, limit):
 

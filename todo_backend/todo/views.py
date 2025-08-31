@@ -3,7 +3,7 @@ from rest_framework.response import Response
 
 from .models import Task
 from .serializers import TaskSerializer
-from .services import generate_text, find_activities, find_similar_activities
+from .services import generate_text, find_activities_struct, find_similar_activities
 
 
 class TaskListCreate(generics.ListCreateAPIView):
@@ -70,7 +70,7 @@ class FindActivitiesView(views.APIView):
         if not limit:
             limit = 5  #default to 5
 
-        aiGeneratedTasks = find_activities(location, duration, interests, limit)
+        aiGeneratedTasks = find_activities_struct(location, duration, interests, limit)
         print("found activities = " + str(aiGeneratedTasks))
 
         if not aiGeneratedTasks:
